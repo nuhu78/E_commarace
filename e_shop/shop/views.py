@@ -15,7 +15,7 @@ def login_view(request):
         user=authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/')
+            return redirect('shop:home')
         else:
             messages.error(request, 'Invalid username or password')
 
@@ -38,9 +38,9 @@ def logout_view(request):
     return redirect('shop:login')
 
 def home(request):
-    featured_products = Product.objects.filter(is_featured=True).order_by('-created')[:8]
+    featured_products = Product.objects.filter(available=True).order_by('-created')[:8]
     categories = Catagory.objects.all()
-    return render(request, '', {
+    return render(request, 'shop/home.html', {
         'featured_products': featured_products,
         'categories': categories
     })
@@ -69,7 +69,7 @@ def product_list(request, category_slug=None):
         | Q(description__icontains=query) 
         | Q(catagory__icontains=query))
 
-    return render(request, '', {
+    return render(request, 'shop/product_list.html', {
         'category': category,
         'categories': categories,
         'products': products,
@@ -78,8 +78,8 @@ def product_list(request, category_slug=None):
 
     })
 
-def product_detail(request, id, slug):
-    product = get_object_or_404(Product, id=id, slug=slug, available=True)
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug, available=True)
     related_products = Product.objects.filter (catagory=product.catagory).exclude(id=product.id)[:4]
     user_rating = None
     if request.user.is_authenticated:
@@ -88,7 +88,7 @@ def product_detail(request, id, slug):
         except Ratting.DoesNotExist:
             pass
     ratting_form = RatingForm(instance=user_rating)
-    return render(request, '', {
+    return render(request, 'shop/product_detail.html', {
         'product': product,
         'related_products': related_products,
         'user_rating': user_rating,
@@ -101,7 +101,7 @@ def cart_detail(request):
         cart = Cart.objects.get(user=request.user)
     except Cart.DoesNotExist:
         cart=Cart.objects.create(user=request.user)
-    return render(request, '', {'cart': cart})
+    return render(request, 'shop/cart.html', {'cart': cart})
 
 @login_required
 def cart_add(request, product_id):
@@ -119,7 +119,7 @@ def cart_add(request, product_id):
         CartItem.objects.create(cart=cart, product=product, quantity=1)
 
     messages.success(request, f'{product.name} added to cart.')    
-    return redirect('')
+    return redirect('shop:product_detail', slug=product.slug)
 @login_required
 def cart_remove(request, product_id):
     cart=get_object_or_404(Cart, user=request.user)
@@ -127,7 +127,7 @@ def cart_remove(request, product_id):
     cart_item=get_object_or_404(CartItem, cart=cart, product=product)
     cart_item.delete()
     messages.success(request, f'{product.name} removed from cart.')
-    return redirect('')
+    return redirect('shop:cart_detail')
 @login_required
 def cart_update(request, product_id):
     cart=get_object_or_404(Cart, user=request.user)
@@ -141,7 +141,8 @@ def cart_update(request, product_id):
         cart_item.quantity=quantity
         cart_item.save()
         messages.success(request, f'Updated {product.name} quantity to {quantity}.')
-    return redirect('')
+    return redirect('shop:cart_detail')
+
 @login_required
 def checkout(request):
     try:
@@ -151,7 +152,7 @@ def checkout(request):
             return redirect('shop:cart_detail')
     except Cart.DoesNotExist:
         messages.error(request, 'Your cart is empty.')
-        return redirect('')
+        return redirect('shop:cart_detail')
 
     if request.method=='POST':
         form=CheckoutForm(request.POST)
@@ -168,7 +169,7 @@ def checkout(request):
                 )
             cart.items.all().delete()
             request.session['order_id']=order.id
-            return redirect('')      
+            return redirect('shop:payment_process')      
     else:
         initial_data={}
         if request.user.first_name:
@@ -179,7 +180,7 @@ def checkout(request):
             initial_data['email']=request.user.email
 
         form=CheckoutForm(initial=initial_data)
-    return render(request, '', {
+    return render(request, 'shop/checkout.html', {
         'cart': cart,
         'form': form
         }) 
@@ -189,14 +190,14 @@ def checkout(request):
 def payment_process(request):
     order_id=request.session.get('order_id')
     if not order_id:
-        return redirect('')
+        return redirect('shop:home')
     order=get_object_or_404(Order, id=order_id)
     payment_data=generate_sslcommerz_payment(order, request)
     if payment_data['status']=='SUCCESS':
         return redirect(payment_data['GatewayPageURL'])
     else:
         messages.error(request, 'Failed to initiate payment. Please try again.')
-        return redirect('')
+        return redirect('shop:checkout')
 
 @csrf_exempt
 @login_required
@@ -218,7 +219,7 @@ def payment_success(request, order_id):
 
     send_confirmation_email(order)
     messages.success(request, 'Payment successful! Your order has been placed.')
-    return redirect('')
+    return redirect('shop:profile')
 
 @csrf_exempt
 @login_required
@@ -227,7 +228,7 @@ def payment_fail(request, order_id):
     order.status='canceled'
     order.save()
     messages.error(request, 'Payment failed. Please try again.')
-    return redirect('')        
+    return redirect('shop:checkout')        
 
 @csrf_exempt
 @login_required
@@ -236,6 +237,52 @@ def payment_cancel(request, order_id):
     order.status='canceled'
     order.save()
     messages.info(request, 'Payment canceled. Your order has been canceled.')
-    return redirect('')
+    return redirect('shop:cart_detail')
 
-  
+@login_required
+def profile(request):
+    tab=request.GET.get('tab')
+    orders=Order.objects.filter(user=request.user).order_by('-created')
+    completed_orders=orders.filter(status='delivered').count()
+    total_spent=sum(order.get_total_cost for order in orders if order.paid)
+    order_history_active=(tab=='orders')
+    return render(request, 'shop/profile.html', {
+        'user': request.user,
+        'orders': orders,
+        'order_history_active': order_history_active,
+        'completed_orders': completed_orders,
+        'total_spent': total_spent,
+    })
+
+@login_required
+def rate_product(request, product_id):
+    product=get_object_or_404(Product, id=product_id, available=True)
+    ordered_items=OrderItem.objects.filter(
+        order__user=request.user,
+        order__paid=True,
+        product=product
+    )
+    if not ordered_items.exists():
+        messages.error(request, 'You can only rate products you have purchased.')
+        return redirect('shop:product_detail', slug=product.slug)
+    try:
+        rating=Ratting.objects.get(product=product, user=request.user)
+    except Ratting.DoesNotExist:
+        rating=None
+
+    if request.method=='POST':
+        form=RatingForm(request.POST, instance=rating)
+        if form.is_valid():
+            rating=form.save(commit=False)
+            rating.product=product
+            rating.user=request.user
+            rating.save()
+            messages.success(request, 'Your rating has been submitted.')
+            return redirect('shop:product_detail', slug=product.slug)      
+    else:
+        form=RatingForm(instance=rating)
+
+    return render(request, 'shop/rate_product.html', {
+        'form': form,
+        'product': product
+    })    
