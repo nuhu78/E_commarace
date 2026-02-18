@@ -137,6 +137,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS=[BASE_DIR / 'static']
+MEDIA_URL='/media/'
+MEDIA_ROOT=BASE_DIR / 'media'
 
 # Django Crispy Forms (Bootstrap 5)
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -145,7 +148,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
