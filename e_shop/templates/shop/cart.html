@@ -272,7 +272,7 @@
             <div class="card-body">
                 <div class="summary-item">
                     <span>Subtotal ({{ cart.get_total_items }} item{{ cart.get_total_items|pluralize }}):</span>
-                    <span class="summary-value">৳{{ cart.get_total_price }}</span>
+                    <span class="summary-value">৳{{ cart.get_total_cost }}</span>
                 </div>
                 <div class="summary-item">
                     <span>Shipping:</span>
@@ -285,7 +285,7 @@
                 <hr>
                 <div class="summary-item mb-4">
                     <span class="summary-total">Total:</span>
-                    <span class="summary-total">৳{{ cart.get_total_price }}</span>
+                    <span class="summary-total">৳{{ cart.get_total_cost }}</span>
                 </div>
                 <div class="d-grid gap-2">
                     <a href="{% url 'shop:checkout' %}" class="btn checkout-btn">

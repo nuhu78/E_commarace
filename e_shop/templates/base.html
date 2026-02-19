@@ -237,8 +237,8 @@
                         <li class="nav-item me-2">
                             <a class="nav-link cart-btn" href="{% url 'shop:cart_detail' %}">
                                 <i class="fas fa-shopping-cart"></i> Cart
-                                {% if cart_items_count %}
-                                    <span class="badge rounded-pill cart-badge">{{ cart_items_count }}</span>
+                                {% if cart_item_count %}
+                                    <span class="badge rounded-pill cart-badge">{{ cart_item_count }}</span>
                                 {% endif %}
                             </a>
                         </li>

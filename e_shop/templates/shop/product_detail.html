@@ -163,7 +163,7 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
         <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Products</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'product_list_by_category' product.catagory.slug %}">{{ product.catagory.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'shop:product_list_by_category' product.catagory.slug %}">{{ product.catagory.name }}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
     </ol>
 </nav>
@@ -331,8 +331,8 @@
                     </div>
                     <div class="card-footer">
                         <div class="d-grid gap-2">
-                            <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-outline-primary">View Details</a>
-                            <form action="{% url 'cart_add' product.id %}" method="post">
+                            <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                            <form action="{% url 'shop:cart_add' product.id %}" method="post">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-primary w-100">Add to Cart</button>
                             </form>

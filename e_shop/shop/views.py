@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
+from urllib3 import request
 from .models import Catagory, OrderItem, Product, Ratting, Cart, Order, CartItem
 from django.contrib import messages
 from .forms import RegistrationForm,RatingForm, CheckoutForm
@@ -119,7 +120,7 @@ def cart_add(request, product_id):
         CartItem.objects.create(cart=cart, product=product, quantity=1)
 
     messages.success(request, f'{product.name} added to cart.')    
-    return redirect('shop:product_detail', slug=product.slug)
+    return redirect(request.META.get('HTTP_REFERER', 'shop:product_list'))
 @login_required
 def cart_remove(request, product_id):
     cart=get_object_or_404(Cart, user=request.user)

@@ -239,7 +239,7 @@
                     </span>
                     {% endif %}
                     
-                    <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-times-circle"></i> Clear All
                     </a>
                 </div>
@@ -410,7 +410,7 @@
                 </div>
                 <h3>No Products Found</h3>
                 <p class="text-muted mb-4">We couldn't find any products matching your criteria.</p>
-                <a href="{% url 'product_list' %}" class="btn btn-primary">
+                <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
                     <i class="fas fa-undo me-2"></i> Reset Filters
                 </a>
             </div>
