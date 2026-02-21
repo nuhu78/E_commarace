@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
      'allauth.socialaccount.providers.google',
+     
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -148,11 +150,11 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SSLCOMMERZ_STORE_ID = ''
+SSLCOMMERZ_STORE_ID = 'eshop6985ba14a9c9e'
 SSLCOMMERZ_STORE_PASSWORD = ''
 SSLCOMMERZ_API_URL = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php'
 SSLCOMMERZ_VALIDATION_URL = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php'
@@ -163,7 +165,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = ''
+EMAIL_HOST_USER = 'anjum.nuhu67@gmail.com'
 EMAIL_HOST_PASSWORD = ''
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

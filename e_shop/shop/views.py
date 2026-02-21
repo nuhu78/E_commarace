@@ -96,7 +96,7 @@ def product_detail(request, slug):
         'rating_form': ratting_form
         
     })
-@login_required
+@login_required(login_url='/login/')
 def cart_detail(request):
     try:
         cart = Cart.objects.get(user=request.user)
@@ -104,7 +104,7 @@ def cart_detail(request):
         cart=Cart.objects.create(user=request.user)
     return render(request, 'shop/cart.html', {'cart': cart})
 
-@login_required
+@login_required(login_url='/login/')
 def cart_add(request, product_id):
     product=get_object_or_404(Product, id=product_id, available=True)
     try:
@@ -121,7 +121,7 @@ def cart_add(request, product_id):
 
     messages.success(request, f'{product.name} added to cart.')    
     return redirect(request.META.get('HTTP_REFERER', 'shop:product_list'))
-@login_required
+@login_required(login_url='/login/')
 def cart_remove(request, product_id):
     cart=get_object_or_404(Cart, user=request.user)
     product=get_object_or_404(Product, id=product_id)
@@ -129,7 +129,7 @@ def cart_remove(request, product_id):
     cart_item.delete()
     messages.success(request, f'{product.name} removed from cart.')
     return redirect('shop:cart_detail')
-@login_required
+@login_required(login_url='/login/')
 def cart_update(request, product_id):
     cart=get_object_or_404(Cart, user=request.user)
     product=get_object_or_404(Product, id=product_id)
@@ -144,7 +144,7 @@ def cart_update(request, product_id):
         messages.success(request, f'Updated {product.name} quantity to {quantity}.')
     return redirect('shop:cart_detail')
 
-@login_required
+@login_required(login_url='/login/')
 def checkout(request):
     try:
         cart=Cart.objects.get(user=request.user)
@@ -187,7 +187,7 @@ def checkout(request):
         }) 
 
 @csrf_exempt
-@login_required
+@login_required(login_url='/login/')
 def payment_process(request):
     order_id=request.session.get('order_id')
     if not order_id:
@@ -201,51 +201,43 @@ def payment_process(request):
         return redirect('shop:checkout')
 
 @csrf_exempt
-@login_required
 def payment_success(request, order_id):
-    order=get_object_or_404(Order, id=order_id, user=request.user)
-    order.paid=True
-    order.status='Processing'
-    order.tansaction_id=order_id
+    order = get_object_or_404(Order, id=order_id)
+    order.paid = True
+    order.status = 'processing'
+    order.tansaction_id = request.POST.get('tran_id', str(order_id))
     order.save()
-    
-    order_items=order.items.all()
-    for item in order_items:
-        product=item.product
-        product.stock -= item.quantity
-       
-        if product.stock < 0:
-            product.stock=0
-            product.save()
 
-    send_confirmation_email(order)
+    for item in order.items.all():
+        product = item.product
+        product.stock = max(product.stock - item.quantity, 0)
+        product.save()
+
     messages.success(request, 'Payment successful! Your order has been placed.')
-    return redirect('shop:profile')
+    return redirect('shop/payment_success.html')
 
 @csrf_exempt
-@login_required
 def payment_fail(request, order_id):
-    order=get_object_or_404(Order, id=order_id, user=request.user)
-    order.status='canceled'
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'canceled'
     order.save()
     messages.error(request, 'Payment failed. Please try again.')
-    return redirect('shop:checkout')        
+    return redirect('shop:checkout')
 
 @csrf_exempt
-@login_required
 def payment_cancel(request, order_id):
-    order=get_object_or_404(Order, id=order_id, user=request.user)
-    order.status='canceled'
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'canceled'
     order.save()
-    messages.info(request, 'Payment canceled. Your order has been canceled.')
+    messages.info(request, 'Payment canceled.')
     return redirect('shop:cart_detail')
 
-@login_required
+@login_required(login_url='/login/')
 def profile(request):
     tab=request.GET.get('tab')
     orders=Order.objects.filter(user=request.user).order_by('-created')
     completed_orders=orders.filter(status='delivered').count()
-    total_spent=sum(order.get_total_cost for order in orders if order.paid)
+    total_spent=sum(order.get_total_cost() for order in orders if order.paid)
     order_history_active=(tab=='orders')
     return render(request, 'shop/profile.html', {
         'user': request.user,
@@ -255,7 +247,7 @@ def profile(request):
         'total_spent': total_spent,
     })
 
-@login_required
+@login_required(login_url='/login/')
 def rate_product(request, product_id):
     product=get_object_or_404(Product, id=product_id, available=True)
     ordered_items=OrderItem.objects.filter(

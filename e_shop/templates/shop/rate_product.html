@@ -5,8 +5,8 @@
 {% block content %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'shop:product_detail' product.slug %}">{{ product.name }}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Write a Review</li>
     </ol>
 </nav>
@@ -60,7 +60,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-between">
-                        <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-outline-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Submit Review</button>
                     </div>
                 </form>
