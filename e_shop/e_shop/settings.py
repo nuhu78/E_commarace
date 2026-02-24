@@ -156,7 +156,7 @@ SOCIALACCOUNT_EMAIL_REQUIRED = False
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 SSLCOMMERZ_STORE_ID = 'eshop6985ba14a9c9e'
-SSLCOMMERZ_STORE_PASSWORD = 'eshop6985ba14a9c9e@ssl'
+SSLCOMMERZ_STORE_PASSWORD = ''
 SSLCOMMERZ_API_URL = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php'
 SSLCOMMERZ_VALIDATION_URL = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php'
 
@@ -167,6 +167,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'anjum.nuhu67@gmail.com'
-EMAIL_HOST_PASSWORD = 'btfxufflhlbasael'
+EMAIL_HOST_PASSWORD = ''
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
