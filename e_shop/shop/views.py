@@ -62,7 +62,7 @@ def product_list(request, category_slug=None):
         products = products.filter(price__lte=request.GET.get('max_price'))   
     if request.GET.get('ratting'):
         min_ratting = int(request.GET.get('ratting'))
-        products=products.annotate(avg_ratting=Avg('rattings__rating')).filter(avg_ratting__gte=min_ratting)
+        products=products.annotate(avg_ratting=Avg('ratings__rating')).filter(avg_ratting__gte=min_ratting)
     if request.GET.get('search'):
         query=request.GET.get('search')
         products=products.filter
@@ -213,8 +213,11 @@ def payment_success(request, order_id):
         product.stock = max(product.stock - item.quantity, 0)
         product.save()
 
+    # Send confirmation email
+    send_confirmation_email(order)
+    
     messages.success(request, 'Payment successful! Your order has been placed.')
-    return redirect('shop/payment_success.html')
+    return render(request, 'shop/payment_success.html', {'order': order})
 
 @csrf_exempt
 def payment_fail(request, order_id):

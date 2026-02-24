@@ -30,10 +30,14 @@ def generate_sslcommerz_payment(order, request):
     return response.json()
 
 def send_confirmation_email(order):
-    
     subject = f'Order Confirmation - Order #{order.id}'
-    message = render_to_string('', {'order': order})
-    to=order.email
-    send_email=EmailMultiAlternatives(subject,'',to=[to])
-    send_email.attach_alternative(message, 'text/html')
-    send_email.send()
+    html_message = render_to_string('shop/email/order_confirmation.html', {'order': order})
+    from django.core.mail import send_mail
+    send_mail(
+        subject,
+        f'Thank you for your order #{order.id}',
+        settings.EMAIL_HOST_USER,
+        [order.email],
+        html_message=html_message,
+        fail_silently=False,
+    )

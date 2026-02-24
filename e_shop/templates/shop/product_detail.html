@@ -249,7 +249,7 @@
                                 </div>
                             </div>
                             <p class="text-muted small mb-2">{{ rating.created|date:"F d, Y" }}</p>
-                            <p class="mb-0">{{ rating.comment }}</p>
+                            <p class="mb-0">{{ rating.review }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -277,7 +277,7 @@
                                     Edit Review
                                 </a>
                             </div>
-                            <p class="mb-0">{{ user_rating.comment }}</p>
+                            <p class="mb-0">{{ user_rating.review }}</p>
                         </div>
                     </div>
                     {% else %}

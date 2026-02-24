@@ -53,10 +53,10 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="{{ form.comment.id_for_label }}" class="form-label">Your Review</label>
-                        {{ form.comment.errors }}
-                        <textarea class="form-control {% if form.comment.errors %}is-invalid{% endif %}" 
-                                  id="{{ form.comment.id_for_label }}" name="{{ form.comment.html_name }}" rows="5">{{ form.comment.value|default:'' }}</textarea>
+                        <label for="{{ form.review.id_for_label }}" class="form-label">Your Review</label>
+                        {{ form.review.errors }}
+                        <textarea class="form-control {% if form.review.errors %}is-invalid{% endif %}" 
+                                  id="{{ form.review.id_for_label }}" name="{{ form.review.html_name }}" rows="5">{{ form.review.value|default:'' }}</textarea>
                     </div>
                     
                     <div class="d-flex justify-content-between">

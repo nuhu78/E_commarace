@@ -63,15 +63,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'e_shop.urls'
 
-# AUTHENTICATION_BACKENDS = [
-
-
-#     'django.contrib.auth.backends.ModelBackend',
-
-
-#     'allauth.account.auth_backends.AuthenticationBackend',
-    
-# ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 TEMPLATES = [
     {
@@ -154,8 +149,14 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+# Social Account Settings
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'optional'
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_QUERY_EMAIL = True
+
 SSLCOMMERZ_STORE_ID = 'eshop6985ba14a9c9e'
-SSLCOMMERZ_STORE_PASSWORD = ''
+SSLCOMMERZ_STORE_PASSWORD = 'eshop6985ba14a9c9e@ssl'
 SSLCOMMERZ_API_URL = 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php'
 SSLCOMMERZ_VALIDATION_URL = 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php'
 
@@ -166,6 +167,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'anjum.nuhu67@gmail.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'btfxufflhlbasael'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

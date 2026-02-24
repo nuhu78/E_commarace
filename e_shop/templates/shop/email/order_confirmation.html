@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #667eea; color: white; padding: 20px; border-radius: 5px 5px 0 0; }
+        .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+        .footer { background-color: #333; color: white; padding: 10px; text-align: center; border-radius: 0 0 5px 5px; }
+        .order-items { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .order-items th, .order-items td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        .order-items th { background-color: #667eea; color: white; }
+        .total { font-weight: bold; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmation</h1>
+            <p>Thank you for your order!</p>
+        </div>
+        
+        <div class="content">
+            <h2>Order #{{ order.id }}</h2>
+            <p>Dear {{ order.first_name }} {{ order.last_name }},</p>
+            <p>Your order has been successfully placed. Below are your order details:</p>
+            
+            <h3>Order Information:</h3>
+            <ul>
+                <li><strong>Order ID:</strong> {{ order.id }}</li>
+                <li><strong>Date:</strong> {{ order.created|date:"F d, Y H:i" }}</li>
+                <li><strong>Status:</strong> {{ order.get_status_display }}</li>
+            </ul>
+            
+            <h3>Delivery Address:</h3>
+            <p>
+                {{ order.first_name }} {{ order.last_name }}<br>
+                {{ order.address }}<br>
+                {{ order.city }}, {{ order.postal_code }}<br>
+                Bangladesh
+            </p>
+            
+            <h3>Order Items:</h3>
+            <table class="order-items">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>৳{{ item.price }}</td>
+                        <td>৳{{ item.get_cost }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <p class="total">Total Amount: ৳{{ order.get_total_cost }}</p>
+            
+            {% if order.note %}
+            <h3>Special Notes:</h3>
+            <p>{{ order.note }}</p>
+            {% endif %}
+            
+            <p>We will notify you once your order is shipped. You can track your order using Order ID {{ order.id }}.</p>
+            <p>If you have any questions, please contact us.</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2026 E-Shop. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -25,7 +25,7 @@ class Product(models.Model):
     updated = models.DateTimeField(auto_now=True)
     image=models.ImageField(upload_to='products/%Y/%m/%d')
 
-    def avarage_rating(self):
+    def average_rating(self):
         ratings = self.ratings.all()
         if ratings.exists():
             return sum(rating.rating for rating in ratings) / ratings.count()
