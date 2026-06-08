@@ -170,3 +170,4 @@ EMAIL_HOST_USER = 'anjum.nuhu67@gmail.com'
 EMAIL_HOST_PASSWORD = ''
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
