@@ -3,7 +3,10 @@
 set -e
 
 mkdir -p media/products
-python manage.py migrate sites --noinput
+
+# Fix migration state: sites was added after socialaccount already ran
+python manage.py shell -c "from django.db.migrations.recorder import MigrationRecorder; from django.db import connection; MigrationRecorder(connection).migration_set.get_or_create(app='sites', name='0001_initial')"
+
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
