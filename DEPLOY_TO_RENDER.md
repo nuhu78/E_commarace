@@ -285,7 +285,29 @@ Thumbs.db
 
 ---
 
-### 1.5 — Create a `render.yaml` file (optional but recommended)
+### 1.5 — Create `e_shop/startup.sh` (needed for free plan)
+
+Render's free plan **does not include Shell/SSH access**. Instead of running commands manually, we'll create a startup script that runs automatically on every deploy.
+
+Create a new file at `e_shop/startup.sh` with this content:
+
+```bash
+#!/bin/bash
+
+set -e
+
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+
+gunicorn e_shop.wsgi --workers 2 --timeout 120
+```
+
+Then make it executable (run in PowerShell from the repo root):
+```powershell
+git update-index --chmod=+x e_shop/startup.sh
+```
+
+### 1.6 — Create a `render.yaml` file (optional but recommended)
 
 This file tells Render exactly how to set up your project automatically. Create it in the **project root** (`Recording_project/`):
 
@@ -298,7 +320,7 @@ services:
     plan: free
     region: singapore
     buildCommand: pip install -r e_shop/requirements.txt
-    startCommand: gunicorn e_shop.wsgi --chdir e_shop --workers 2 --timeout 120
+    startCommand: ./e_shop/startup.sh
     envVarGroups:
       - key: django-settings
     domains:
@@ -405,7 +427,7 @@ Now let's put your Django app on the internet!
 | **Root Directory** | `e_shop` |
 | **Runtime** | `Python` |
 | **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn e_shop.wsgi --workers 2 --timeout 120` |
+| **Start Command** | `./startup.sh` |
 | **Plan** | **Free** ✅ |
 
 6. Click **"Create Web Service"**
@@ -454,75 +476,99 @@ Copy the output — that's your secret key! Paste it as the value for `DJANGO_SE
 
 ---
 
-## Step 7 — Run Migrations & Create Admin User
+## Step 7 — Startup Script (Auto-Run Migrations)
 
-The database is empty! We need to create the tables and an admin user.
+The free plan on Render **does not include Shell/SSH access**. Instead, we'll create a startup script that runs migrations and static file collection automatically every time your app starts.
 
-### 7.1 — Open Shell (Terminal) on Render
+We already created `e_shop/startup.sh` in Step 1. But since you don't have it yet, let's create it now:
 
-1. In your Render web service dashboard, click **"Shell"** (top right area)
-2. A terminal will open INSIDE your running app on Render
+Create a new file at `e_shop/startup.sh` with this content:
 
-### 7.2 — Run Migrations
-
-In the Render shell, type:
 ```bash
-python manage.py migrate
+#!/bin/bash
+
+set -e
+
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+
+gunicorn e_shop.wsgi --workers 2 --timeout 120
 ```
 
-You should see output like:
+> **What does this do?**
+> - `set -e` — Stop if any command fails (so you see errors)
+> - `migrate --noinput` — Auto-create all database tables
+> - `collectstatic --noinput` — Gather all CSS/JS files for serving
+> - `gunicorn ...` — Start the web server
+
+### 7.1 — Make the Script Executable (Windows)
+
+Run this in PowerShell:
+```powershell
+git update-index --chmod=+x e_shop/startup.sh
 ```
-Running migrations:
-  Applying contenttypes.0001_initial... OK
-  Applying auth.0001_initial... OK
-  Applying shop.0001_initial... OK
-  ...
+
+> **Note:** On Windows, this just sets the Git permission flag. Render will use it correctly on their Linux servers.
+
+### 7.2 — Create Admin User (From Your Local Machine)
+
+Since you can't use Render Shell on the free plan, create the admin user from your **local project**:
+
+**Option A — Quick one-liner (easiest):**
+
+Open PowerShell in the `e_shop/` folder and run:
+
+```powershell
+python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'your-email@example.com', 'your-password-here')"
 ```
 
-✅ **Database tables created!**
+Replace `your-email@example.com` and `your-password-here` with your own values.
 
-### 7.3 — Create Admin User
+**Option B — Using the normal command (if you prefer):**
 
-In the same shell:
-```bash
+```powershell
 python manage.py createsuperuser
 ```
 
-Enter:
-- **Username**: `admin` (or anything you like)
-- **Email**: your email address
-- **Password**: Choose a strong password
-- **Password (again)**: type it again
+> **Important:** This creates the admin in your **local SQLite database**, not on Render. See the next step to push it to Render.
 
-✅ **Admin user created!**
+### 7.3 — Push to GitHub and Deploy
 
-### 7.4 — Collect Static Files
+1. Save all your changes and push to GitHub:
 
-```bash
-python manage.py collectstatic --noinput
+```powershell
+cd D:\Course\ostad\E-Commerce\Recording_project
+git add .
+git commit -m "Add startup script for auto-migration"
+git push
 ```
 
-You'll see output like:
+2. Render will automatically detect the push and redeploy.
+
+3. **Now your admin user needs to exist on Render's database too.** The easiest way is to create it locally first using the same credentials, then when your app starts on Render, `migrate` will create the tables, but the superuser won't exist unless we add it to migrations or use another approach.
+
+**Alternative — Create Superuser via the Web App:**
+
+Since Shell is not available, you can:
+1. First, register a **normal user** through your live site's `/register/` page
+2. Then temporarily set `DJANGO_DEBUG=True` in Render's Environment Variables and trigger a manual deploy
+3. Actually, the simplest approach is to use the one-liner below — but it requires your local database to connect to Render's database.
+
+**Easiest Approach — One-time admin creation on Render:**
+
+In your **local** PowerShell, temporarily connect to Render's database to create the admin:
+
+```powershell
+cd D:\Course\ostad\E-Commerce\Recording_project\e_shop
+
+# Set your Render database URL temporarily
+$env:DATABASE_URL="YOUR_RENDER_INTERNAL_DATABASE_URL"
+
+# Create the superuser on Render's database
+python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'your-email@example.com', 'your-password-here')"
 ```
-Copying static files...
-128 static files copied to '/opt/render/project/src/e_shop/staticfiles'.
-```
 
-✅ **Static files ready!**
-
-### 7.5 — Exit the Shell
-
-Type:
-```bash
-exit
-```
-
-### 7.6 — Restart Your App
-
-1. Go back to your web service dashboard
-2. Click the **"Manual Deploy"** button (it might say "Deploy" or have a down arrow ▼)
-3. Click **"Clear build cache & deploy"**
-4. Wait for the deploy to finish
+> 💡 After running this, the admin user exists on Render's database permanently. You only need to do this once.
 
 ---
 
@@ -644,6 +690,7 @@ This does NOT affect your database or code — only uploaded files.
 ## ✅ Deployment Checklist
 
 - [ ] `runtime.txt` created at repo root (`Recording_project/runtime.txt`)
+- [ ] `startup.sh` created at `e_shop/startup.sh`
 - [ ] `settings.py` updated (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES, WhiteNoise)
 - [ ] `dj-database-url` + `PyJWT` + `cryptography` added to `requirements.txt`
 - [ ] `.gitignore` created
@@ -653,9 +700,9 @@ This does NOT affect your database or code — only uploaded files.
 - [ ] Web Service created on Render
 - [ ] Environment variables set (DJANGO_SECRET_KEY, DJANGO_DEBUG, DJANGO_ALLOWED_HOSTS, DATABASE_URL)
 - [ ] Deploy succeeded (check logs)
-- [ ] Migrations run via Shell
-- [ ] Superuser created via Shell
-- [ ] Static files collected
+- [ ] Migrations auto-run via `startup.sh` (no Shell needed)
+- [ ] Superuser created via local one-liner (or web register)
+- [ ] Static files auto-collected via `startup.sh`
 - [ ] App restarted
 - [ ] Site tested in browser ✅
 

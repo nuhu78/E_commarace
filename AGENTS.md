@@ -53,6 +53,7 @@ python manage.py test      # no tests written yet
 - **WhiteNoise** configured in MIDDLEWARE + STORAGES for production static file serving
 - **`.gitignore`** exists at repo root (`__pycache__/`, `*.sqlite3`, `media/`, `.venv/`, etc.)
 - **`runtime.txt`** at repo root (`python-3.12.0`) — required by Render
+- **`startup.sh`** at `e_shop/startup.sh` — auto-runs migrate + collectstatic + gunicorn (free Render plan lacks Shell)
 - **No tests** written (`shop/tests.py` is default stub)
 - **`DEPLOY_TO_AZURE.md`** and **`DEPLOY_TO_RENDER.md`** have full deployment guides at repo root
 - **`render.yaml`** at repo root for Render Blueprint deploy (optional)
