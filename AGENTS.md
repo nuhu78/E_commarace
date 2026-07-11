@@ -48,7 +48,7 @@ python manage.py test      # no tests written yet
 - **Model typos**: `Catagory` (Category), `Ratting` (Rating), `tansaction_id` (transaction) — keep existing names, do not "fix"
 - **`settings.py`**: mixed indentation (tabs+spaces on some lines near allauth/SOCIALACCOUNT) — follow existing style
 - **`login_url`**: custom views use `/login/` in `@login_required(login_url='/login/')` — not the allauth default
-- **`requirements.txt`**: at `e_shop/requirements.txt` — includes gunicorn, psycopg2-binary, whitenoise, dj-database-url
+- **`requirements.txt`**: at `e_shop/requirements.txt` — includes gunicorn, psycopg2-binary, whitenoise, dj-database-url, PyJWT
 - **`settings.py`** reads `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, and `DATABASE_URL` from env vars with local fallbacks
 - **WhiteNoise** configured in MIDDLEWARE + STORAGES for production static file serving
 - **`.gitignore`** exists at repo root (`__pycache__/`, `*.sqlite3`, `media/`, `.venv/`, etc.)

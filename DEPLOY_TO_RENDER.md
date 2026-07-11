@@ -221,7 +221,7 @@ STORAGES = {
 
 ### 1.3 — Update `e_shop/requirements.txt`
 
-Add `dj-database-url` to your requirements file so Django can read the `DATABASE_URL` environment variable.
+Add `dj-database-url` and `PyJWT` to your requirements file.
 
 Your `e_shop/requirements.txt` should now look like this:
 
@@ -236,9 +236,10 @@ gunicorn>=22.0
 psycopg2-binary>=2.9
 whitenoise>=6.0.0
 dj-database-url>=2.0
+PyJWT>=2.0
 ```
 
-> Note: `dj-database-url` is a helper library that reads a single `DATABASE_URL` string and converts it into Django database settings automatically. Very convenient!
+> **Why?** `dj-database-url` reads a single `DATABASE_URL` string and converts it into Django database settings automatically. `PyJWT` is needed by `django-allauth` for Google login — without it your app will crash on startup.
 
 ---
 
@@ -574,6 +575,16 @@ Then redeploy.
 
 **Fix:** Add the missing package to `e_shop/requirements.txt` and re-deploy.
 
+### ❌ Error: `No module named 'jwt'`
+
+**Fix:** `PyJWT` is missing from `requirements.txt`. Add this line:
+```txt
+PyJWT>=2.0
+```
+Then push to GitHub. Render will auto-deploy.
+
+> Note: Make sure you have **pushed ALL your local changes** (including `runtime.txt`, the updated `settings.py`, and `requirements.txt`) to GitHub before deploying on Render. Run `git status` to check for any uncommitted files before pushing.
+
 ---
 
 ## 📝 How to Deploy Again After Making Changes
@@ -625,7 +636,7 @@ This does NOT affect your database or code — only uploaded files.
 
 - [ ] `runtime.txt` created at `e_shop/runtime.txt`
 - [ ] `settings.py` updated (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES, WhiteNoise)
-- [ ] `dj-database-url` added to `requirements.txt`
+- [ ] `dj-database-url` + `PyJWT` added to `requirements.txt`
 - [ ] `.gitignore` created
 - [ ] Code pushed to GitHub
 - [ ] Render account created
