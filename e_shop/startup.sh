@@ -19,7 +19,7 @@ from django.contrib.sites.models import Site
 rec = MigrationRecorder(connection)
 
 # Record sites.0001 as applied (it was never applied)
-rec.migration_set.get_or_create(app='sites', name='0001_initial')
+rec.migration_qs.get_or_create(app='sites', name='0001_initial')
 
 # Create django_site table if it doesn't exist
 try:
