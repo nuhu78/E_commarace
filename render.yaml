@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: eshop-django-app
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r e_shop/requirements.txt
+    startCommand: gunicorn e_shop.wsgi --chdir e_shop --workers 2 --timeout 120
+    envVarGroups:
+      - key: django-settings
+    domains:
+      - eshop-django-app.onrender.com
