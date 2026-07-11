@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'shop',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -156,6 +157,8 @@ STORAGES = {
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+SITE_ID = 1
+
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
@@ -184,4 +187,3 @@ EMAIL_HOST_USER = 'anjum.nuhu67@gmail.com'
 EMAIL_HOST_PASSWORD = ''
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
