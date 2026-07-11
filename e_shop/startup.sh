@@ -37,6 +37,22 @@ else:
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
+# Create missing M2M junction table for socialaccount_socialapp_sites
+python -c "
+import os, django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_shop.settings')
+django.setup()
+from django.db import connection
+from allauth.socialaccount.models import SocialApp
+table = SocialApp.sites.through._meta.db_table
+with connection.schema_editor() as schema_editor:
+    if table not in connection.introspection.table_names():
+        schema_editor.create_model(SocialApp.sites.through)
+        print(f'Created missing table: {table}')
+    else:
+        print(f'Table already exists: {table}')
+"
+
 python -c "
 import os, django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_shop.settings')
