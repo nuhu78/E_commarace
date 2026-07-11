@@ -2,6 +2,7 @@
 
 set -e
 
+mkdir -p media/products
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 

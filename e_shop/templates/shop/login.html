@@ -32,9 +32,16 @@
                 
                 <div class="text-center">
                     <p>Or sign in with:</p>
+                    {% get_providers as socialaccount_providers %}
+                    {% if socialaccount_providers %}
                     <a href="{% provider_login_url 'google' next=request.GET.next %}" class="btn btn-outline-danger">
                         <i class="fab fa-google me-2"></i> Google
                     </a>
+                    {% else %}
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="fab fa-google me-2"></i> Google (Not configured)
+                    </button>
+                    {% endif %}
                 </div>
                 
                 <div class="text-center mt-4">
