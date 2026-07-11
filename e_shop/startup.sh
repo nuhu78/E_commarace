@@ -18,8 +18,9 @@ from django.contrib.sites.models import Site
 
 rec = MigrationRecorder(connection)
 
-# Record sites.0001 as applied (it was never applied)
+# Record sites migrations as applied
 rec.migration_qs.get_or_create(app='sites', name='0001_initial')
+rec.migration_qs.get_or_create(app='sites', name='0002_alter_domain_unique')
 
 # Create django_site table if it doesn't exist
 try:
@@ -28,8 +29,6 @@ except Exception:
     with connection.schema_editor() as schema_editor:
         schema_editor.create_model(Site)
     Site.objects.create(id=1, domain='eshop-django-app.onrender.com', name='E-Shop')
-    # Also fake sites.0002 (create_model already created the unique index)
-    rec.migration_qs.get_or_create(app='sites', name='0002_alter_domain_unique')
     print('Created django_site table and default site.')
 else:
     print('django_site table already exists.')
