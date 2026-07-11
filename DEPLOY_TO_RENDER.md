@@ -58,10 +58,10 @@ We need to add a few files and update `settings.py` so your project works on Ren
 
 This file tells Render which Python version to use.
 
-Create a new file at `e_shop/runtime.txt` with this content:
+Create a new file at the **project root** (`Recording_project/runtime.txt`) with this content:
 
 ```
-python-3.12
+python-3.12.0
 ```
 
 > **Why?** Render needs to know what Python version to install. We're using Python 3.12 because it's the latest stable version that works with Django 6.0.
@@ -237,9 +237,10 @@ psycopg2-binary>=2.9
 whitenoise>=6.0.0
 dj-database-url>=2.0
 PyJWT>=2.0
+cryptography>=44.0
 ```
 
-> **Why?** `dj-database-url` reads a single `DATABASE_URL` string and converts it into Django database settings automatically. `PyJWT` is needed by `django-allauth` for Google login — without it your app will crash on startup.
+> **Why?** `dj-database-url` reads a single `DATABASE_URL` string and converts it into Django database settings automatically. `PyJWT` + `cryptography` are needed by `django-allauth` for Google login — without them your app will crash on startup.
 
 ---
 
@@ -583,7 +584,15 @@ PyJWT>=2.0
 ```
 Then push to GitHub. Render will auto-deploy.
 
-> Note: Make sure you have **pushed ALL your local changes** (including `runtime.txt`, the updated `settings.py`, and `requirements.txt`) to GitHub before deploying on Render. Run `git status` to check for any uncommitted files before pushing.
+### ❌ Error: `No module named 'cryptography'`
+
+**Fix:** `cryptography` is needed by `PyJWT`. Add this line to `requirements.txt`:
+```txt
+cryptography>=44.0
+```
+Then push to GitHub.
+
+> Note: Make sure you have **pushed ALL your local changes** (including `runtime.txt` at repo root, the updated `settings.py`, and `requirements.txt`) to GitHub before deploying on Render. Run `git status` to check for any uncommitted files before pushing.
 
 ---
 
@@ -634,9 +643,9 @@ This does NOT affect your database or code — only uploaded files.
 
 ## ✅ Deployment Checklist
 
-- [ ] `runtime.txt` created at `e_shop/runtime.txt`
+- [ ] `runtime.txt` created at repo root (`Recording_project/runtime.txt`)
 - [ ] `settings.py` updated (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES, WhiteNoise)
-- [ ] `dj-database-url` + `PyJWT` added to `requirements.txt`
+- [ ] `dj-database-url` + `PyJWT` + `cryptography` added to `requirements.txt`
 - [ ] `.gitignore` created
 - [ ] Code pushed to GitHub
 - [ ] Render account created

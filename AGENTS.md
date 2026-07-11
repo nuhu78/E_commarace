@@ -52,7 +52,7 @@ python manage.py test      # no tests written yet
 - **`settings.py`** reads `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, and `DATABASE_URL` from env vars with local fallbacks
 - **WhiteNoise** configured in MIDDLEWARE + STORAGES for production static file serving
 - **`.gitignore`** exists at repo root (`__pycache__/`, `*.sqlite3`, `media/`, `.venv/`, etc.)
-- **`runtime.txt`** at `e_shop/runtime.txt` (python-3.12) — required by Render
+- **`runtime.txt`** at repo root (`python-3.12.0`) — required by Render
 - **No tests** written (`shop/tests.py` is default stub)
 - **`DEPLOY_TO_AZURE.md`** and **`DEPLOY_TO_RENDER.md`** have full deployment guides at repo root
 - **`render.yaml`** at repo root for Render Blueprint deploy (optional)
