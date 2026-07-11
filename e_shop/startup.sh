@@ -4,29 +4,38 @@ set -e
 
 mkdir -p media/products
 
-# Clean up fake sites migration records from previous bad deploys
-# Uses python -c directly to avoid Django shell auto-import bugs
+# Fix: socialaccount.0001_initial was applied BEFORE sites was installed.
+# We need to (a) fake sites.0001 as applied, (b) create the django_site table,
+# then run migrate normally.
+
 python -c "
 import os, django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_shop.settings')
 django.setup()
-from django.db.migrations.recorder import MigrationRecorder
 from django.db import connection
+from django.db.migrations.recorder import MigrationRecorder
+from django.contrib.sites.models import Site
+
+rec = MigrationRecorder(connection)
+
+# Record sites.0001 as applied (it was never applied)
+rec.migration_set.get_or_create(app='sites', name='0001_initial')
+
+# Create django_site table if it doesn't exist
 try:
-    recorder = MigrationRecorder(connection)
-    deleted, _ = recorder.migration_qs.filter(app='sites').delete()
-    if deleted:
-        print(f'Cleaned up {deleted} fake sites migration record(s)')
-    else:
-        print('No fake sites records to clean up')
-except Exception as e:
-    print(f'Cleanup skipped: {e}')
+    Site.objects.count()
+except Exception:
+    with connection.schema_editor() as schema_editor:
+        schema_editor.create_model(Site)
+    Site.objects.create(id=1, domain='eshop-django-app.onrender.com', name='E-Shop')
+    print('Created django_site table and default site.')
+else:
+    print('django_site table already exists.')
 "
 
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
-# Create superuser if none exists (uses python -c to avoid shell auto-import bugs)
 python -c "
 import os, django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'e_shop.settings')
