@@ -15,7 +15,7 @@ def login_view(request):
         password=request.POST.get('password')
         user=authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('shop:home')
         else:
             messages.error(request, 'Invalid username or password')
@@ -27,7 +27,7 @@ def register_view(request):
         form=RegistrationForm(request.POST)
         if form.is_valid():
             user=form.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'Registration successful!')
             return redirect('shop:login')
     else:
