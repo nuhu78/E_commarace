@@ -5,7 +5,7 @@ services:
     plan: free
     region: singapore
     buildCommand: pip install -r e_shop/requirements.txt
-    startCommand: gunicorn e_shop.wsgi --chdir e_shop --workers 2 --timeout 120
+    startCommand: cd e_shop && ./startup.sh
     envVarGroups:
       - key: django-settings
     domains:
