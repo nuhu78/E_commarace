@@ -456,8 +456,16 @@ Environment variables are like secret settings that your app needs to run on Ren
 | `DJANGO_DEBUG` | `False` |
 | `DJANGO_ALLOWED_HOSTS` | `eshop-django-app.onrender.com,localhost` |
 | `DATABASE_URL` | Your **Internal Database URL** from Step 4 |
+| `EMAIL_HOST_USER` | `your-email@gmail.com` — your Gmail address for sending emails |
+| `EMAIL_HOST_PASSWORD` | Your Gmail **App Password** (see note below) |
+| `SSLCOMMERZ_STORE_ID` | Your SSLCOMMERZ Store ID (`eshop6985ba14a9c9e` for sandbox) |
+| `SSLCOMMERZ_STORE_PASSWORD` | Your SSLCOMMERZ Store Password (leave blank for sandbox) |
+| `SSLCOMMERZ_API_URL` | `https://sandbox.sslcommerz.com/gwprocess/v4/api.php` |
+| `SSLCOMMERZ_VALIDATION_URL` | `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php` |
 
 > ⚠️ Replace `eshop-django-app` with YOUR actual app name if you used something different.
+>
+> 📧 **Gmail App Password**: Use a [Google App Password](https://support.google.com/accounts/answer/185833) (16-letter code), **not** your regular Gmail password. Enable 2-Factor Authentication first, then generate an App Password under Security → App passwords.
 
 ### How to Generate a Secret Key:
 
@@ -698,7 +706,7 @@ This does NOT affect your database or code — only uploaded files.
 - [ ] Render account created
 - [ ] PostgreSQL database created on Render
 - [ ] Web Service created on Render
-- [ ] Environment variables set (DJANGO_SECRET_KEY, DJANGO_DEBUG, DJANGO_ALLOWED_HOSTS, DATABASE_URL)
+- [ ] Environment variables set (DJANGO_SECRET_KEY, DJANGO_DEBUG, DJANGO_ALLOWED_HOSTS, DATABASE_URL, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, SSLCOMMERZ_STORE_ID, SSLCOMMERZ_STORE_PASSWORD, SSLCOMMERZ_API_URL, SSLCOMMERZ_VALIDATION_URL)
 - [ ] Deploy succeeded (check logs)
 - [ ] Migrations auto-run via `startup.sh` (no Shell needed)
 - [ ] Superuser created via local one-liner (or web register)
